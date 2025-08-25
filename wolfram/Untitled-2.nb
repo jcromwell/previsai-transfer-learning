@@ -10,61 +10,67 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      7046,        189]
-NotebookOptionsPosition[      6377,        170]
-NotebookOutlinePosition[      6772,        186]
-CellTagsIndexPosition[      6729,        183]
+NotebookDataLength[     41448,       1006]
+NotebookOptionsPosition[     39252,        961]
+NotebookOutlinePosition[     39645,        977]
+CellTagsIndexPosition[     39602,        974]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell[BoxData[{
- RowBox[{
-  RowBox[{
-  "poiDirectory", 
-   "=", "\"\</Users/jcromwell/Library/CloudStorage/GoogleDrive-jcromwell@\
-entacmedical.com/Shared drives/*Master Drive - ABJ/*Master Folder - \
-Entac/R&D/PrevisAI/files/12h/poi/foreground\>\""}], ";"}], "\[IndentingNewLine]", 
- RowBox[{
-  RowBox[{
-  "nopoiDirectory", 
-   "=", "\"\</Users/jcromwell/Library/CloudStorage/GoogleDrive-jcromwell@\
-entacmedical.com/Shared drives/*Master Drive - ABJ/*Master Folder - \
-Entac/R&D/PrevisAI/files/12h/nopoi/foreground\>\""}], ";"}]}], "Input",
- CellChangeTimes->{{3.965118199647463*^9, 3.965118241498734*^9}, {
-  3.965118377974153*^9, 3.965118401923167*^9}, {3.965118457909453*^9, 
-  3.965118464117341*^9}, {3.965118834662622*^9, 3.965118845509877*^9}, {
-  3.965119039674279*^9, 3.965119042563792*^9}, {3.965119093615827*^9, 
-  3.965119113931829*^9}},
- CellLabel->"In[8]:=",ExpressionUUID->"eff5fe31-dc78-4237-8923-2865a96bdeb0"],
+
+Cell[CellGroupData[{
+Cell["Load and Prepare Audio for Feature Extraction", "Subtitle",
+ CellChangeTimes->{{3.965128065197484*^9, 
+  3.965128085355151*^9}},ExpressionUUID->"5387edf3-a778-4748-b1b7-\
+4895ef0355cb"],
+
+Cell["\<\
+Audio are loaded, resampled to 16 Khz , and chunked to 0.96s windows (both \
+required by YAMNet).\
+\>", "Text",
+ CellChangeTimes->{{3.965128095640562*^9, 
+  3.965128167720482*^9}},ExpressionUUID->"5d61e515-8690-4f67-8f3b-\
+3aebd37ff78f"],
 
 Cell[BoxData[
  RowBox[{
   RowBox[{"(*", " ", 
    RowBox[{"Define", " ", "the", " ", "directories"}], " ", "*)"}], 
-  "\[IndentingNewLine]", "\t", "\[IndentingNewLine]", "\t", 
-  RowBox[{"(*", " ", 
-   RowBox[{
-   "Get", " ", "the", " ", "list", " ", "of", " ", "audio", " ", "files"}], 
-   " ", "*)"}], "\[IndentingNewLine]", "\t", 
+  "\[IndentingNewLine]", 
   RowBox[{
+   RowBox[{
+    RowBox[{
+    "nopoiDirectory", 
+     "=", "\"\</Users/jcromwell/Library/CloudStorage/GoogleDrive-jcromwell@\
+entacmedical.com/Shared drives/*Master Drive - ABJ/*Master Folder - \
+Entac/R&D/PrevisAI/files/12h/nopoi/foreground\>\""}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{
+    "poiDirectory", 
+     "=", "\"\</Users/jcromwell/Library/CloudStorage/GoogleDrive-jcromwell@\
+entacmedical.com/Shared drives/*Master Drive - ABJ/*Master Folder - \
+Entac/R&D/PrevisAI/files/12h/poi/foreground\>\""}], ";"}], 
+   "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{"(*", " ", 
+    RowBox[{
+    "Get", " ", "the", " ", "list", " ", "of", " ", "audio", " ", "files"}], 
+    " ", "*)"}], "\[IndentingNewLine]", 
    RowBox[{
     RowBox[{"nopoiFiles", "=", 
      RowBox[{"FileNames", "[", 
-      RowBox[{"\"\<*.wav\>\"", ",", "nopoiDirectory"}], "]"}]}], ";"}], "\[IndentingNewLine]",
-    "\t", 
+      RowBox[{"\"\<*.wav\>\"", ",", "nopoiDirectory"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
    RowBox[{
     RowBox[{"poiFiles", "=", 
      RowBox[{"FileNames", "[", 
       RowBox[{"\"\<*.wav\>\"", ",", "poiDirectory"}], "]"}]}], ";"}], 
-   "\[IndentingNewLine]", "\t", "\[IndentingNewLine]", "\t", 
-   RowBox[{"(*", " ", 
-    RowBox[{"Import", ",", " ", 
-     RowBox[{"convert", " ", "stereo", " ", "to", " ", "mono"}], ",", " ", 
-     RowBox[{"and", " ", "resample", " ", "to", " ", "16000", " ", "Hz"}]}], 
-    " ", "*)"}], "\[IndentingNewLine]", "\t", 
+   "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Convert", " ", "to", " ", "single", " ", "channel", " ", "and", " ", 
+     "resample", " ", "at", " ", "16", "KHz"}], "*)"}], "\[IndentingNewLine]", 
    RowBox[{
-    RowBox[{"nopoiAudio", "=", 
+    RowBox[{"resampledNoPOI", "=", 
      RowBox[{
       RowBox[{
        RowBox[{"AudioResample", "[", 
@@ -72,10 +78,9 @@ Cell[BoxData[
          RowBox[{"AudioChannelMix", "[", 
           RowBox[{
            RowBox[{"Import", "[", "#", "]"}], ",", "\"\<Mono\>\""}], "]"}], ",",
-          "16000"}], "]"}], " ", "&"}], " ", "/@", " ", "nopoiFiles"}]}], 
-    ";"}], "\[IndentingNewLine]", "\t", 
+          "16000"}], "]"}], "&"}], "/@", "nopoiFiles"}]}], ";"}], "\[IndentingNewLine]", 
    RowBox[{
-    RowBox[{"poiAudio", "=", 
+    RowBox[{"resampledPOI", "=", 
      RowBox[{
       RowBox[{
        RowBox[{"AudioResample", "[", 
@@ -83,94 +88,880 @@ Cell[BoxData[
          RowBox[{"AudioChannelMix", "[", 
           RowBox[{
            RowBox[{"Import", "[", "#", "]"}], ",", "\"\<Mono\>\""}], "]"}], ",",
-          "16000"}], "]"}], " ", "&"}], " ", "/@", " ", "poiFiles"}]}], 
-    ";"}]}]}]], "Input",
- CellChangeTimes->{{3.965119414458542*^9, 3.965119430116931*^9}},
- CellLabel->"In[18]:=",ExpressionUUID->"ec4bd3c0-cf80-4d99-9658-c51012446cb6"],
+          "16000"}], "]"}], "&"}], "/@", "poiFiles"}]}], ";"}]}]}]], "Input",
+ CellChangeTimes->{
+  3.965126796502722*^9, {3.965126936694888*^9, 3.965126939649995*^9}, {
+   3.965127035625566*^9, 3.9651270879290743`*^9}, {3.96512743011434*^9, 
+   3.9651274334899*^9}, {3.965127567217778*^9, 3.965127594698457*^9}, 
+   3.965128031365306*^9, {3.965128702148117*^9, 3.965128706991893*^9}, {
+   3.965130677902864*^9, 
+   3.965130704123131*^9}},ExpressionUUID->"a6e17e72-cebb-403d-8c5f-\
+1e1c6563bdb0"],
+
+Cell[BoxData[""], "Input",
+ CellChangeTimes->{{3.965126796502722*^9, 3.965126934540594*^9}, {
+  3.965128043276469*^9, 
+  3.965128056438025*^9}},ExpressionUUID->"427d16b7-aaf9-46e9-b2a5-\
+fd9ee03fef2b"]
+}, Open  ]],
 
 Cell[CellGroupData[{
 
-Cell["Feature Extraction", "Subtitle",
- CellChangeTimes->{{3.965119308816679*^9, 
-  3.9651193126143723`*^9}},ExpressionUUID->"97e073ab-a99f-47f1-9cba-\
+Cell["Feature Extractor", "Subtitle",
+ CellChangeTimes->{{3.965119308816679*^9, 3.9651193126143723`*^9}, {
+  3.9651300357118807`*^9, 
+  3.965130037137376*^9}},ExpressionUUID->"97e073ab-a99f-47f1-9cba-\
 bc82dbeace05"],
 
 Cell[BoxData[
  RowBox[{
   RowBox[{"(*", 
    RowBox[{
-   "1.", " ", "Define", " ", "the", " ", "function", " ", "to", " ", "get", " ",
-     "the", " ", "feature", " ", "extractor", " ", "network"}], "*)"}], 
+   "Import", " ", "AudioIdentify", " ", "V1", " ", "which", " ", "is", " ", 
+    "trained", " ", "on", " ", "same", " ", "set", " ", "as", " ", "YAMNet"}],
+    "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+   "Modify", " ", "the", " ", "model", " ", "for", " ", "feature", " ", 
+    "extraction"}], "*)"}], "\[IndentingNewLine]", 
   RowBox[{
    RowBox[{
-    RowBox[{"getYamnetFeatureExtractor", ":=", 
+    RowBox[{"coreNet", "=", 
      RowBox[{"NetExtract", "[", 
       RowBox[{
        RowBox[{
-       "NetModel", "[", "\"\<YAMNet Trained on AudioSet Data\>\"", "]"}], 
-       ",", "\"\<Embedding\>\""}], "]"}]}], ";"}], "\[IndentingNewLine]", 
-   "\n", 
-   RowBox[{"(*", 
-    RowBox[{"2.", " ", "Get", " ", "the", " ", "feature", " ", "extractor"}], 
-    "*)"}], "\[IndentingNewLine]", 
+       "NetModel", 
+        "[", "\"\<Wolfram AudioIdentify V1 Trained on AudioSet Data\>\"", 
+        "]"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"1", ",", "\"\<Net\>\""}], "}"}]}], "]"}]}], ";"}], "\n", 
    RowBox[{
-    RowBox[{"featureNet", "=", "getYamnetFeatureExtractor"}], ";"}], 
-   "\[IndentingNewLine]", "\[IndentingNewLine]", 
-   RowBox[{"(*", 
-    RowBox[{
-    "3.", " ", "Load", " ", "and", " ", "preprocess", " ", "an", " ", 
-     "example", " ", "audio", " ", "clip"}], "*)"}], "\n", 
-   RowBox[{"(*", 
-    RowBox[{
-    "YAMNet", " ", "expects", " ", "mono", " ", "audio", " ", "at", " ", "a", 
-     " ", "sample", " ", "rate", " ", "of", " ", "16000", " ", "Hz"}], "*)"}],
-    "\[IndentingNewLine]", 
+    RowBox[{"singleFrameFeatureExtractor", "=", 
+     RowBox[{"NetDrop", "[", 
+      RowBox[{"coreNet", ",", 
+       RowBox[{"-", "3"}]}], "]"}]}], ";"}], "\[IndentingNewLine]", 
    RowBox[{
-    RowBox[{"audio", "=", 
-     RowBox[{"ExampleData", "[", 
-      RowBox[{"{", 
-       RowBox[{"\"\<Audio\>\"", ",", "\"\<Bird\>\""}], "}"}], "]"}]}], ";"}], 
-   "\n", 
-   RowBox[{
-    RowBox[{"preprocessedAudio", "=", 
-     RowBox[{"AudioResample", "[", 
+    RowBox[{"extractor", "=", 
+     RowBox[{"NetChain", "[", 
       RowBox[{
-       RowBox[{"AudioChannelCombine", "[", 
-        RowBox[{"audio", ",", "\"\<Mono\>\""}], "]"}], ",", "16000"}], 
-      "]"}]}], ";"}], "\[IndentingNewLine]", "\n", 
-   RowBox[{"(*", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"NetMapOperator", "[", "singleFrameFeatureExtractor", "]"}], 
+         ",", 
+         RowBox[{"AggregationLayer", "[", 
+          RowBox[{"Max", ",", "1"}], "]"}], ",", 
+         RowBox[{"FlattenLayer", "[", "]"}]}], "}"}], ",", 
+       RowBox[{"\"\<Input\>\"", "->", 
+        RowBox[{
+         RowBox[{
+         "NetModel", 
+          "[", "\"\<Wolfram AudioIdentify V1 Trained on AudioSet Data\>\"", 
+          "]"}], "[", 
+         RowBox[{"[", "\"\<Input\>\"", "]"}], "]"}]}]}], "]"}]}], 
+    ";"}]}]}]], "Input",
+ CellChangeTimes->{{3.9651286655867643`*^9, 3.965128665588738*^9}, {
+   3.965128974224269*^9, 3.965129021070017*^9}, {3.965129057119814*^9, 
+   3.9651290654306803`*^9}, {3.965129138856803*^9, 3.9651291399895887`*^9}, {
+   3.965129208918858*^9, 3.965129211345533*^9}, 3.965129263691251*^9, 
+   3.965129539514875*^9, {3.965129667637123*^9, 3.9651296692933826`*^9}, 
+   3.965130030147243*^9, 3.965130668559276*^9, {3.9651307310211973`*^9, 
+   3.96513078470267*^9}},ExpressionUUID->"0ecc41d6-87df-4ad4-b9e2-\
+9eecce583cd4"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Feature Extraction", "Subtitle",
+ CellChangeTimes->{{3.965130041672741*^9, 
+  3.965130046466309*^9}},ExpressionUUID->"ae8342aa-8ec2-405f-9f27-\
+cdbfe9a6cc3b"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"featureVectorsPOI", "=", 
+   RowBox[{"extractor", "[", 
+    RowBox[{"resampledPOI", ",", 
+     RowBox[{"TargetDevice", "->", "\"\<GPU\>\""}]}], "]"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"poiData", "=", 
+   RowBox[{"Thread", "[", 
+    RowBox[{"featureVectorsPOI", "->", "1"}], "]"}]}], ";"}]}], "Input",
+ CellChangeTimes->{{3.965130057798284*^9, 3.96513012238877*^9}, {
+   3.965130324839786*^9, 3.965130325246619*^9}, {3.965130381255517*^9, 
+   3.9651303958332357`*^9}, {3.965130514451509*^9, 3.965130515212851*^9}, 
+   3.965130614366826*^9},ExpressionUUID->"fc2ef081-60dc-40d4-bbba-\
+9e2d852c187d"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"featureVectorsNoPOI", "=", 
+   RowBox[{"extractor", "[", 
+    RowBox[{"resampledNoPOI", ",", 
+     RowBox[{"TargetDevice", "->", "\"\<GPU\>\""}]}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"nopoiData", "=", 
+   RowBox[{"Thread", "[", 
+    RowBox[{"featureVectorsNoPOI", "->", "0"}], "]"}]}], ";"}]}], "Input",
+ CellChangeTimes->{{3.965130102526052*^9, 3.965130127382883*^9}, {
+  3.965130178767537*^9, 3.9651301790957623`*^9}, {3.965130476922998*^9, 
+  3.9651305099189577`*^9}, {3.965130604691368*^9, 3.965130605034749*^9}},
+ CellLabel->"In[92]:=",ExpressionUUID->"6da33dc1-3546-431b-8fea-eed738f2060e"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"Length", "@", "poiData"}], "\[IndentingNewLine]", 
+ RowBox[{"Length", "@", "nopoiData"}]}], "Input",
+ CellChangeTimes->{{3.965131785168668*^9, 3.965131796780299*^9}},
+ CellLabel->"In[96]:=",ExpressionUUID->"f5cf7f3c-52f5-4076-8fc0-06838590be94"],
+
+Cell[BoxData["17"], "Output",
+ CellChangeTimes->{3.965131797713574*^9},
+ CellLabel->"Out[96]=",ExpressionUUID->"611e3ae5-f8a1-4c5c-9991-4fc01dd232c3"],
+
+Cell[BoxData["73"], "Output",
+ CellChangeTimes->{3.96513179771437*^9},
+ CellLabel->"Out[97]=",ExpressionUUID->"b5b0176f-5dc7-4527-9b86-3f095123d8ad"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Stratified Split of Data", "Subtitle",
+ CellChangeTimes->{{3.965132191057345*^9, 
+  3.965132195211389*^9}},ExpressionUUID->"a5953a3e-9f47-4f14-9f79-\
+736ff2d8bb37"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"SeedRandom", "[", "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"stratifiedSplitFromGroups", "[", 
+    RowBox[{"poiData_List", ",", "nopoiData_List", ",", 
+     RowBox[{"poiTestCount_Integer", ":", "5"}]}], "]"}], ":=", 
+   RowBox[{"Module", "[", 
     RowBox[{
-    "4.", " ", "Apply", " ", "the", " ", "network", " ", "to", " ", "the", " ",
-      "audio", " ", "to", " ", "extract", " ", "the", " ", "feature", " ", 
-     "vector"}], "*)"}], "\[IndentingNewLine]", 
-   RowBox[{
-    RowBox[{"features", "=", 
-     RowBox[{"featureNet", "[", "preprocessedAudio", "]"}]}], ";"}], 
-   "\[IndentingNewLine]", "\n", 
-   RowBox[{"(*", 
+     RowBox[{"{", 
+      RowBox[{
+      "shuffledPOI", ",", "shuffledNoPOI", ",", "poiTrainFeatures", ",", 
+       "poiTestFeatures", ",", "noPoiTrainFeatures", ",", "noPoiTestFeatures",
+        ",", "noPoiTestCount", ",", "trainPairs", ",", "testPairs", ",", 
+       "shuffledTrain", ",", "shuffledTest", ",", "xTrain", ",", "yTrain", ",",
+        "xTest", ",", "yTest"}], "}"}], ",", 
+     RowBox[{"(*", 
+      RowBox[{"1.", " ", "Split", " ", "the", " ", "POI", " ", "data", " ", 
+       RowBox[{"(", 
+        RowBox[{"labeled", " ", "1"}], ")"}]}], "*)"}], 
+     RowBox[{
+      RowBox[{"shuffledPOI", "=", 
+       RowBox[{"RandomSample", "[", "poiData", "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"poiTestFeatures", "=", 
+       RowBox[{"Take", "[", 
+        RowBox[{"shuffledPOI", ",", "poiTestCount"}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"poiTrainFeatures", "=", 
+       RowBox[{"Drop", "[", 
+        RowBox[{"shuffledPOI", ",", "poiTestCount"}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{
+        RowBox[{"2.", " ", "Split", " ", "the", " ", "non"}], "-", 
+        RowBox[{"POI", " ", "data", " ", 
+         RowBox[{"(", 
+          RowBox[{"labeled", " ", "0"}], ")"}], " ", "using", " ", "the", " ",
+          "same", " ", "proportion"}]}], "*)"}], 
+      RowBox[{"noPoiTestCount", "=", 
+       RowBox[{"Round", "[", 
+        RowBox[{
+         RowBox[{"Length", "[", "nopoiData", "]"}], "*", 
+         RowBox[{"(", 
+          RowBox[{
+           RowBox[{"Length", "[", "poiTestFeatures", "]"}], "/", 
+           RowBox[{"Length", "[", "poiData", "]"}]}], ")"}]}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"shuffledNoPOI", "=", 
+       RowBox[{"RandomSample", "[", "nopoiData", "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"noPoiTestFeatures", "=", 
+       RowBox[{"Take", "[", 
+        RowBox[{"shuffledNoPOI", ",", "noPoiTestCount"}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"noPoiTrainFeatures", "=", 
+       RowBox[{"Drop", "[", 
+        RowBox[{"shuffledNoPOI", ",", "noPoiTestCount"}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{"3.", " ", "Create", " ", 
+        RowBox[{"{", 
+         RowBox[{"feature", ",", "label"}], "}"}], " ", "pairs", " ", "for", " ",
+         "the", " ", "training", " ", "and", " ", "test", " ", "sets"}], 
+       "*)"}], 
+      RowBox[{"trainPairs", "=", 
+       RowBox[{"Join", "[", 
+        RowBox[{
+         RowBox[{"Transpose", "[", 
+          RowBox[{"{", 
+           RowBox[{"poiTrainFeatures", ",", 
+            RowBox[{"ConstantArray", "[", 
+             RowBox[{"1", ",", 
+              RowBox[{"Length", "[", "poiTrainFeatures", "]"}]}], "]"}]}], 
+           "}"}], "]"}], ",", 
+         RowBox[{"Transpose", "[", 
+          RowBox[{"{", 
+           RowBox[{"noPoiTrainFeatures", ",", 
+            RowBox[{"ConstantArray", "[", 
+             RowBox[{"0", ",", 
+              RowBox[{"Length", "[", "noPoiTrainFeatures", "]"}]}], "]"}]}], 
+           "}"}], "]"}]}], "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"testPairs", "=", 
+       RowBox[{"Join", "[", 
+        RowBox[{
+         RowBox[{"Transpose", "[", 
+          RowBox[{"{", 
+           RowBox[{"poiTestFeatures", ",", 
+            RowBox[{"ConstantArray", "[", 
+             RowBox[{"1", ",", 
+              RowBox[{"Length", "[", "poiTestFeatures", "]"}]}], "]"}]}], 
+           "}"}], "]"}], ",", 
+         RowBox[{"Transpose", "[", 
+          RowBox[{"{", 
+           RowBox[{"noPoiTestFeatures", ",", 
+            RowBox[{"ConstantArray", "[", 
+             RowBox[{"0", ",", 
+              RowBox[{"Length", "[", "noPoiTestFeatures", "]"}]}], "]"}]}], 
+           "}"}], "]"}]}], "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{
+       "4.", " ", "Shuffle", " ", "the", " ", "pairs", " ", "and", " ", 
+        "separate", " ", "back", " ", "into", " ", "features", " ", 
+        RowBox[{"(", "X", ")"}], " ", "and", " ", "labels", " ", 
+        RowBox[{"(", "y", ")"}]}], "*)"}], 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"xTrain", ",", "yTrain"}], "}"}], "=", 
+       RowBox[{"Transpose", "[", 
+        RowBox[{"RandomSample", "[", "trainPairs", "]"}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"xTest", ",", "yTest"}], "}"}], "=", 
+       RowBox[{"Transpose", "[", 
+        RowBox[{"RandomSample", "[", "testPairs", "]"}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{
+       "5.", " ", "Return", " ", "an", " ", "Association", " ", "for", " ", 
+        "clarity"}], "*)"}], 
+      RowBox[{"<|", 
+       RowBox[{
+        RowBox[{"\"\<XTrain\>\"", "->", "xTrain"}], ",", 
+        RowBox[{"\"\<yTrain\>\"", "->", "yTrain"}], ",", 
+        RowBox[{"\"\<XTest\>\"", "->", "xTest"}], ",", 
+        RowBox[{"\"\<yTest\>\"", "->", "yTest"}]}], "|>"}]}]}], "]"}]}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{"poiFeatureVectors", "=", 
+   RowBox[{"First", "/@", "poiData"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"nopoiFeatureVectors", "=", 
+   RowBox[{"First", "/@", "nopoiData"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"splitData", "=", 
+   RowBox[{"stratifiedSplitFromGroups", "[", 
+    RowBox[{"poiFeatureVectors", ",", "nopoiFeatureVectors", ",", "5"}], 
+    "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"trainingData", "=", 
+   RowBox[{"Thread", "[", 
     RowBox[{
-    "5.", " ", "Check", " ", "the", " ", "dimensions", " ", "of", " ", "the", 
-     " ", "output"}], "*)"}], "\[IndentingNewLine]", 
-   RowBox[{"Dimensions", "[", "features", "]"}], "\[IndentingNewLine]", 
-   RowBox[{"(*", 
-    RowBox[{"Expected", " ", 
-     RowBox[{"Output", ":", 
-      RowBox[{"{", "1024", "}"}]}]}], "*)"}], "\[IndentingNewLine]", "\n", 
-   RowBox[{"(*", 
-    RowBox[{
-    "You", " ", "can", " ", "view", " ", "the", " ", "first", " ", "few", " ",
-      "elements", " ", "of", " ", "the", " ", "feature", " ", "vector"}], 
-    "*)"}], "\[IndentingNewLine]", 
-   RowBox[{"Take", "[", 
-    RowBox[{"features", ",", "5"}], "]"}]}]}]], "Input",
- CellChangeTimes->{{3.965119315172414*^9, 
-  3.965119315175653*^9}},ExpressionUUID->"b92b1fde-40fb-4262-9576-\
-4fa15a91bd4a"]
+     RowBox[{"splitData", "[", "\"\<XTrain\>\"", "]"}], "->", 
+     RowBox[{"splitData", "[", "\"\<yTrain\>\"", "]"}]}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"testData", "=", 
+    RowBox[{"Thread", "[", 
+     RowBox[{
+      RowBox[{"splitData", "[", "\"\<XTest\>\"", "]"}], "->", 
+      RowBox[{"splitData", "[", "\"\<yTest\>\"", "]"}]}], "]"}]}], ";"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]"}], "Input",
+ CellChangeTimes->{{3.965132808928746*^9, 3.9651328089312057`*^9}, 
+   3.965134756204973*^9, {3.965134844391992*^9, 3.965134884877223*^9}},
+ CellLabel->
+  "In[453]:=",ExpressionUUID->"5ea30681-a1d6-4a26-a1e4-d716a9542ad6"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Train Model", "Subtitle",
+ CellChangeTimes->{{3.9651333282128983`*^9, 
+  3.965133329532284*^9}},ExpressionUUID->"43d20850-3ffe-4ecb-ae16-\
+babf5790e207"],
+
+Cell[BoxData[""], "Input",
+ CellChangeTimes->{{3.9651333332715893`*^9, 3.9651333332738132`*^9}, {
+   3.965133783289919*^9, 3.9651338285049267`*^9}, 
+   3.965134742856411*^9},ExpressionUUID->"07a7a2aa-4499-4a1b-8608-\
+a20afe34a88a"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"utf", "=", 
+   RowBox[{"UtilityFunction", "\[Rule]", " ", 
+    RowBox[{"<|", 
+     RowBox[{
+      RowBox[{"0", "\[Rule]", " ", 
+       RowBox[{"<|", 
+        RowBox[{
+         RowBox[{"0", "\[Rule]", " ", "1"}], ",", " ", 
+         RowBox[{"1", "\[Rule]", " ", 
+          RowBox[{"-", "1"}]}]}], "|>"}]}], ",", 
+      RowBox[{"1", "\[Rule]", " ", 
+       RowBox[{"<|", 
+        RowBox[{
+         RowBox[{"1", "\[Rule]", " ", "1"}], ",", 
+         RowBox[{"0", "\[Rule]", 
+          RowBox[{"-", "2"}]}]}], "|>"}]}]}], "|>"}]}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"classifier", "=", 
+   RowBox[{"Classify", "[", 
+    RowBox[{"trainingData", ",", 
+     RowBox[{"Method", "->", "\"\<GradientBoostedTrees\>\""}], ",", 
+     RowBox[{"TargetDevice", "->", "\"\<CPU\>\""}], ",", 
+     RowBox[{"PerformanceGoal", "->", "\"\<Quality\>\""}], ",", "utf"}], 
+    "]"}]}], ";"}], "\n", 
+ RowBox[{"measurements", "=", 
+  RowBox[{"ClassifierMeasurements", "[", 
+   RowBox[{"classifier", ",", "testData"}], "]"}]}]}], "Input",
+ CellChangeTimes->{{3.9651333332715893`*^9, 3.9651333332738132`*^9}, {
+  3.965133783289919*^9, 3.965133841706101*^9}, {3.965133890528001*^9, 
+  3.96513414264942*^9}, {3.9651341752909317`*^9, 3.965134286844149*^9}, {
+  3.965134325914899*^9, 3.9651343642924356`*^9}, {3.9651343943846188`*^9, 
+  3.9651344495392523`*^9}, {3.965134545915772*^9, 3.965134546231473*^9}, {
+  3.9651345790965433`*^9, 3.9651346940442877`*^9}, {3.965134774369089*^9, 
+  3.965134820822132*^9}, {3.965134893108409*^9, 3.9651349320249767`*^9}},
+ CellLabel->
+  "In[463]:=",ExpressionUUID->"5a936958-ab94-4edd-adf8-9d46cc4545df"],
+
+Cell[BoxData[
+ TagBox[
+  StyleBox[
+   FrameBox[GridBox[{
+      {
+       ItemBox[
+        PaneBox[
+         StyleBox["\<\"Classifier Measurements\"\>", "InformationTitleText",
+          StripOnInput->False],
+         FrameMargins->{{10, 5}, {-4, 2}}],
+        Alignment->{Left, Bottom},
+        BaseStyle->"InformationTitleBackground",
+        Frame->{{False, False}, {True, False}},
+        FrameStyle->Opacity[0.1],
+        ItemSize->{Automatic, 1},
+        StripOnInput->False]},
+      {
+       ItemBox[
+        TagBox[
+         PaneBox[
+          TagBox[GridBox[{
+             {
+              TemplateBox[{
+                TemplateBox[{5}, "Spacer1"], 
+                StyleBox[
+                 InterpretationBox[
+                  Cell["Classifier method"], 
+                  TextCell["Classifier method"]], "InformationRowLabel", 
+                 StripOnInput -> False]},
+               "RowDefault"], 
+              
+              InterpretationBox[Cell[
+               "GradientBoostedTrees",ExpressionUUID->
+                "7a462e3e-3fe2-4e64-85d2-b4c0087ca4b7"],
+               TextCell["GradientBoostedTrees"]]},
+             {
+              TemplateBox[{
+                TemplateBox[{5}, "Spacer1"], 
+                StyleBox[
+                 InterpretationBox[
+                  Cell["Number of test examples"], 
+                  TextCell["Number of test examples"]], "InformationRowLabel",
+                  StripOnInput -> False]},
+               "RowDefault"], "26"},
+             {
+              TemplateBox[{
+                TemplateBox[{5}, "Spacer1"], 
+                StyleBox[
+                 InterpretationBox[
+                  Cell["Accuracy"], 
+                  TextCell["Accuracy"]], "InformationRowLabel", StripOnInput -> 
+                 False]},
+               "RowDefault"], 
+              TemplateBox[{
+                RowBox[{"(", 
+                  InterpretationBox[
+                   
+                   TemplateBox[{"81.", "8."}, "Around", SyntaxForm -> 
+                    PlusMinus], 
+                   Around[
+                   80.7692307692307736033`3., 7.8822698199689371634`3.]], 
+                  ")"}], "\"%\"", "percent", "\"Percent\""},
+               "QuantityPostfix"]},
+             {
+              TemplateBox[{
+                TemplateBox[{5}, "Spacer1"], 
+                StyleBox[
+                 TagBox[
+                  TooltipBox[
+                   InterpretationBox[
+                    Cell["Accuracy baseline"], 
+                    TextCell["Accuracy baseline"]], 
+                   "\"Accuracy if predicting the commonest class\"", 
+                   TooltipStyle -> "TextStyling"], 
+                  Annotation[#, "Accuracy if predicting the commonest class", 
+                   "Tooltip"]& ], "InformationRowLabel", StripOnInput -> 
+                 False]},
+               "RowDefault"], 
+              TemplateBox[{
+                RowBox[{"(", 
+                  InterpretationBox[
+                   
+                   TemplateBox[{"81.", "8."}, "Around", SyntaxForm -> 
+                    PlusMinus], 
+                   Around[
+                   80.7692307692307736033`3., 7.8822698199689371634`3.]], 
+                  ")"}], "\"%\"", "percent", "\"Percent\""},
+               "QuantityPostfix"]},
+             {
+              TemplateBox[{
+                TemplateBox[{5}, "Spacer1"], 
+                StyleBox[
+                 InterpretationBox[
+                  Cell["Geometric mean of probabilities"], 
+                  TextCell["Geometric mean of probabilities"]], 
+                 "InformationRowLabel", StripOnInput -> False]},
+               "RowDefault"], 
+              TagBox[
+               TooltipBox[
+                TemplateBox[{"0.6128547855019288448`3.", 
+                  StyleBox[
+                   
+                   TemplateBox[{
+                    "\" \[PlusMinus] \"", "0.0709919671880705483`2."}, 
+                    "RowDefault"], {10, 
+                    Opacity[0.5]}, StripOnInput -> False]},
+                 "RowDefault"],
+                
+                TemplateBox[{
+                 "\"95% confidence interval: [\"", "0.4708708511257877483`3.",
+                   "\", \"", "0.7548387198780699414`3.", "\"]\""}, 
+                 "RowDefault"],
+                TooltipStyle->{}],
+               Annotation[#, 
+                Row[{
+                 "95% confidence interval: [", 0.4708708511257877483`3., ", ",
+                   0.7548387198780699414`3., "]"}], "Tooltip"]& ]},
+             {
+              TemplateBox[{
+                TemplateBox[{5}, "Spacer1"], 
+                StyleBox[
+                 InterpretationBox[
+                  Cell["Mean cross entropy"], 
+                  TextCell["Mean cross entropy"]], "InformationRowLabel", 
+                 StripOnInput -> False]},
+               "RowDefault"], 
+              TagBox[
+               TooltipBox[
+                TemplateBox[{"0.489627262623134718`3.", 
+                  StyleBox[
+                   
+                   TemplateBox[{
+                    "\" \[PlusMinus] \"", "0.1155806442325213457`2."}, 
+                    "RowDefault"], {10, 
+                    Opacity[0.5]}, StripOnInput -> False]},
+                 "RowDefault"],
+                
+                TemplateBox[{
+                 "\"95% confidence interval: [\"", "0.2584659741580920267`3.",
+                   "\", \"", "0.7207885510881774094`3.", "\"]\""}, 
+                 "RowDefault"],
+                TooltipStyle->{}],
+               Annotation[#, 
+                
+                Row[{"95% confidence interval: [", 0.2584659741580920267`3., 
+                  ", ", 0.7207885510881774094`3., "]"}], "Tooltip"]& ]},
+             {
+              TemplateBox[{
+                TemplateBox[{5}, "Spacer1"], 
+                StyleBox[
+                 InterpretationBox[
+                  Cell["Single evaluation time"], 
+                  TextCell["Single evaluation time"]], "InformationRowLabel", 
+                 StripOnInput -> False]},
+               "RowDefault"], 
+              TemplateBox[{"4.48`", 
+                
+                RowBox[{
+                 "\"ms\"", "\[InvisibleSpace]", "\"/\"", "\[InvisibleSpace]", 
+                  "\"example\""}], "milliseconds per example", 
+                FractionBox["\"Milliseconds\"", "\"Examples\""]},
+               "Quantity"]},
+             {
+              TemplateBox[{
+                TemplateBox[{5}, "Spacer1"], 
+                StyleBox[
+                 InterpretationBox[
+                  Cell["Batch evaluation speed"], 
+                  TextCell["Batch evaluation speed"]], "InformationRowLabel", 
+                 StripOnInput -> False]},
+               "RowDefault"], 
+              TemplateBox[{"1.46`", 
+                
+                RowBox[{
+                 "\"examples\"", "\[InvisibleSpace]", "\"/\"", 
+                  "\[InvisibleSpace]", "\"ms\""}], "examples per millisecond", 
+                FractionBox["\"Examples\"", "\"Milliseconds\""]},
+               "Quantity"]},
+             {
+              ItemBox[
+               
+               GraphicsBox[
+                RasterBox[{{{0.9075725475859046, 0.7658090428536, 
+                 0.4139935495982641}, {1., 1., 1.}}, {{1., 0.42, 0.}, {1., 1.,
+                  1.}}}, {{0, 0}, {2, 2}}, {0, 1}],
+                Epilog->{{
+                   TagBox[
+                    TooltipBox[
+                    InsetBox[
+                    GraphicsBox[{
+                    Opacity[1.], 
+                    InsetBox[
+                    FormBox["21", TraditionalForm], {0.5, 0.5}, 
+                    BaseStyle -> {10, FontColor -> GrayLevel[0]}], 
+                    Opacity[0.], 
+                    RectangleBox[{0, 0}, {1, 1}]}], {0.5, 1.5}, Automatic, {
+                    1., 1.}], 
+                    TagBox[
+                    GridBox[{{
+                    
+                    TemplateBox[{
+                    "21", "\" examples of \"", "0", 
+                    "\" correctly classified\""}, "RowDefault"]}, {
+                    
+                    TemplateBox[{"\"Precision = \"", "0.8076923076923077`"}, 
+                    "RowDefault"]}, {
+                    TemplateBox[{"\"Recall = \"", "1.`"}, "RowDefault"]}, {
+                    
+                    TemplateBox[{"\"FScore = \"", "0.8936170212765958`"}, 
+                    "RowDefault"]}}, 
+                    GridBoxAlignment -> {"Columns" -> {{Left}}}, 
+                    DefaultBaseStyle -> "Column", 
+                    GridBoxItemSize -> {
+                    "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+                    "Column"]], Annotation[#, 
+                    Column[{
+                    Row[{21, " examples of ", 0, " correctly classified"}], 
+                    Row[{"Precision = ", 0.8076923076923077}], 
+                    Row[{"Recall = ", 1.}], 
+                    Row[{"FScore = ", 0.8936170212765958}]}], "Tooltip"]& ], 
+                   TagBox[
+                    TooltipBox[
+                    InsetBox[
+                    GraphicsBox[{
+                    Opacity[1.], 
+                    InsetBox[
+                    FormBox["5", TraditionalForm], {0.5, 0.5}, 
+                    BaseStyle -> {10, FontColor -> GrayLevel[0]}], 
+                    Opacity[0.], 
+                    RectangleBox[{0, 0}, {1, 1}]}], {0.5, 0.5}, Automatic, {
+                    1., 1.}], 
+                    TagBox[
+                    GridBox[{{
+                    
+                    TemplateBox[{
+                    "5", "\" examples of \"", "1", "\" misclassified as \"", 
+                    "0"}, "RowDefault"]}, {
+                    
+                    TemplateBox[{
+                    "\"Column fraction = \"", "0.19230769230769232`"}, 
+                    "RowDefault"]}, {
+                    
+                    TemplateBox[{"\"Row fraction = \"", "1.`"}, 
+                    "RowDefault"]}}, 
+                    GridBoxAlignment -> {"Columns" -> {{Left}}}, 
+                    DefaultBaseStyle -> "Column", 
+                    GridBoxItemSize -> {
+                    "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+                    "Column"]], Annotation[#, 
+                    Column[{
+                    Row[{5, " examples of ", 1, " misclassified as ", 0}], 
+                    Row[{"Column fraction = ", 0.19230769230769232`}], 
+                    Row[{"Row fraction = ", 1.}]}], "Tooltip"]& ]}, {
+                   TagBox[
+                    TooltipBox[
+                    InsetBox[
+                    GraphicsBox[{
+                    Opacity[1.], 
+                    InsetBox[
+                    FormBox["0", TraditionalForm], {0.5, 0.5}, 
+                    BaseStyle -> {10, FontColor -> GrayLevel[0]}], 
+                    Opacity[0.], 
+                    RectangleBox[{0, 0}, {1, 1}]}], {1.5, 1.5}, Automatic, {
+                    1., 1.}], 
+                    TagBox[
+                    GridBox[{{
+                    
+                    TemplateBox[{
+                    "0", "\" example of \"", "0", "\" misclassified as \"", 
+                    "1"}, "RowDefault"]}, {
+                    
+                    TemplateBox[{"\"Column fraction = \"", "0.`"}, 
+                    "RowDefault"]}, {
+                    
+                    TemplateBox[{"\"Row fraction = \"", "0.`"}, 
+                    "RowDefault"]}}, 
+                    GridBoxAlignment -> {"Columns" -> {{Left}}}, 
+                    DefaultBaseStyle -> "Column", 
+                    GridBoxItemSize -> {
+                    "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+                    "Column"]], Annotation[#, 
+                    Column[{
+                    Row[{0, " example of ", 0, " misclassified as ", 1}], 
+                    Row[{"Column fraction = ", 0.}], 
+                    Row[{"Row fraction = ", 0.}]}], "Tooltip"]& ], 
+                   TagBox[
+                    TooltipBox[
+                    InsetBox[
+                    GraphicsBox[{
+                    Opacity[1.], 
+                    InsetBox[
+                    FormBox["0", TraditionalForm], {0.5, 0.5}, 
+                    BaseStyle -> {10, FontColor -> GrayLevel[0]}], 
+                    Opacity[0.], 
+                    RectangleBox[{0, 0}, {1, 1}]}], {1.5, 0.5}, Automatic, {
+                    1., 1.}], 
+                    TagBox[
+                    GridBox[{{
+                    
+                    TemplateBox[{
+                    "0", "\" example of \"", "1", 
+                    "\" correctly classified\""}, "RowDefault"]}, {
+                    TemplateBox[{"\"Precision = \"", "0.`"}, "RowDefault"]}, {
+                    
+                    TemplateBox[{"\"Recall = \"", "0.`"}, "RowDefault"]}, {
+                    TemplateBox[{"\"FScore = \"", "0.`"}, "RowDefault"]}}, 
+                    GridBoxAlignment -> {"Columns" -> {{Left}}}, 
+                    DefaultBaseStyle -> "Column", 
+                    GridBoxItemSize -> {
+                    "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+                    "Column"]], Annotation[#, 
+                    Column[{
+                    Row[{0, " example of ", 1, " correctly classified"}], 
+                    Row[{"Precision = ", 0.}], 
+                    Row[{"Recall = ", 0.}], 
+                    Row[{"FScore = ", 0.}]}], "Tooltip"]& ]}, 
+                  TagBox[
+                   TooltipBox[
+                    InsetBox[
+                    GraphicsBox[{
+                    Opacity[0.], 
+                    RectangleBox[{0, 0}, {1, 1}]}], {2.5, 1.5}, Automatic, {
+                    10., 1.}], 
+                    TagBox[
+                    GridBox[{{
+                    
+                    TemplateBox[{
+                    "21", "\" example\"", "\"s\"", "\" of class \"", "0"}, 
+                    "RowDefault"]}, {
+                    TemplateBox[{"\"Recall = \"", "1.`"}, "RowDefault"]}}, 
+                    GridBoxAlignment -> {"Columns" -> {{Left}}}, 
+                    DefaultBaseStyle -> "Column", 
+                    GridBoxItemSize -> {
+                    "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+                    "Column"]], Annotation[#, 
+                    Column[{
+                    Row[{21, " example", "s", " of class ", 0}], 
+                    Row[{"Recall = ", 1.}]}], "Tooltip"]& ], 
+                  TagBox[
+                   TooltipBox[
+                    InsetBox[
+                    GraphicsBox[{
+                    Opacity[0.], 
+                    RectangleBox[{0, 0}, {1, 1}]}], {2.5, 0.5}, Automatic, {
+                    10., 1.}], 
+                    TagBox[
+                    GridBox[{{
+                    
+                    TemplateBox[{
+                    "5", "\" example\"", "\"s\"", "\" of class \"", "1"}, 
+                    "RowDefault"]}, {
+                    TemplateBox[{"\"Recall = \"", "0.`"}, "RowDefault"]}}, 
+                    GridBoxAlignment -> {"Columns" -> {{Left}}}, 
+                    DefaultBaseStyle -> "Column", 
+                    GridBoxItemSize -> {
+                    "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+                    "Column"]], Annotation[#, 
+                    Column[{
+                    Row[{5, " example", "s", " of class ", 1}], 
+                    Row[{"Recall = ", 0.}]}], "Tooltip"]& ], 
+                  TagBox[
+                   TooltipBox[
+                    InsetBox[
+                    GraphicsBox[{
+                    Opacity[0.], 
+                    RectangleBox[{0, 0}, {1, 1}]}], {0.5, -0.5}, Automatic, {
+                    1., 10.}], 
+                    TagBox[
+                    GridBox[{{
+                    
+                    TemplateBox[{
+                    "26", "\" example\"", "\"s\"", "\" classified as \"", 
+                    "0"}, "RowDefault"]}, {
+                    
+                    TemplateBox[{"\"Precision = \"", "0.8076923076923077`"}, 
+                    "RowDefault"]}}, 
+                    GridBoxAlignment -> {"Columns" -> {{Left}}}, 
+                    DefaultBaseStyle -> "Column", 
+                    GridBoxItemSize -> {
+                    "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+                    "Column"]], Annotation[#, 
+                    Column[{
+                    Row[{26, " example", "s", " classified as ", 0}], 
+                    Row[{"Precision = ", 0.8076923076923077}]}], 
+                    "Tooltip"]& ], 
+                  TagBox[
+                   TooltipBox[
+                    InsetBox[
+                    GraphicsBox[{
+                    Opacity[0.], 
+                    RectangleBox[{0, 0}, {1, 1}]}], {1.5, -0.5}, Automatic, {
+                    1., 10.}], 
+                    TagBox[
+                    GridBox[{{
+                    
+                    TemplateBox[{
+                    "0", "\" example\"", "\"\"", "\" classified as \"", "1"}, 
+                    "RowDefault"]}, {
+                    TemplateBox[{"\"Precision = \"", "0.`"}, "RowDefault"]}}, 
+                    GridBoxAlignment -> {"Columns" -> {{Left}}}, 
+                    DefaultBaseStyle -> "Column", 
+                    GridBoxItemSize -> {
+                    "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+                    "Column"]], Annotation[#, 
+                    Column[{
+                    Row[{0, " example", "", " classified as ", 1}], 
+                    Row[{"Precision = ", 0.}]}], "Tooltip"]& ]},
+                Frame->True,
+                FrameLabel->{
+                  FormBox["\"predicted class\"", TraditionalForm], 
+                  FormBox["\"actual class\"", TraditionalForm]},
+                FrameTicks->{{{{1.5, 
+                    FormBox[
+                    RotationBox["0", BoxRotation -> 0.], TraditionalForm]}, {
+                    0.5, 
+                    FormBox[
+                    RotationBox["1", BoxRotation -> 0.], 
+                    TraditionalForm]}}, {{1.5, 
+                    FormBox["21", TraditionalForm]}, {0.5, 
+                    FormBox["5", TraditionalForm]}}}, {{{0.5, 
+                    FormBox[
+                    RotationBox["26", BoxRotation -> 1.5707963267948966`], 
+                    TraditionalForm]}, {1.5, 
+                    FormBox[
+                    RotationBox["0", BoxRotation -> 1.5707963267948966`], 
+                    TraditionalForm]}}, {{0.5, 
+                    FormBox[
+                    RotationBox["0", BoxRotation -> 1.5707963267948966`], 
+                    TraditionalForm]}, {1.5, 
+                    FormBox[
+                    RotationBox["1", BoxRotation -> 1.5707963267948966`], 
+                    TraditionalForm]}}}},
+                FrameTicksStyle->13,
+                GridLinesStyle->Directive[
+                  GrayLevel[0.5, 0.4]],
+                ImageSize->181.2,
+                
+                Method->{
+                 "GridLinesInFront" -> True, "AxisPadding" -> Scaled[0.02], 
+                  "DefaultBoundaryStyle" -> Automatic, 
+                  "DefaultGraphicsInteraction" -> {
+                   "Version" -> 1.2, "TrackMousePosition" -> {True, False}, 
+                    "Effects" -> {
+                    "Highlight" -> {"ratio" -> 2}, 
+                    "HighlightPoint" -> {"ratio" -> 2}, 
+                    "Droplines" -> {
+                    "freeformCursorMode" -> True, 
+                    "placement" -> {"x" -> "All", "y" -> "None"}}}}, 
+                  "DefaultPlotStyle" -> Automatic, "DomainPadding" -> 
+                  Scaled[0.02], "RangePadding" -> Scaled[0.05]},
+                PlotRangePadding->None],
+               Alignment->Center,
+               StripOnInput->False], "\[SpanFromLeft]"}
+            },
+            AutoDelete->False,
+            ColumnsEqual->False,
+            
+            GridBoxAlignment->{
+             "Columns" -> {Right, {Left}}, "Rows" -> {{Baseline}}},
+            GridBoxDividers->{"Columns" -> {False, {
+                 Opacity[0.15]}, False}},
+            
+            GridBoxItemSize->{
+             "Columns" -> {Automatic, {Automatic}}, "Rows" -> {{1.}}},
+            GridBoxSpacings->{"Columns" -> {
+                Offset[0.27999999999999997`], 
+                Offset[1.1199999999999999`], {
+                 Offset[1.75]}, 
+                Offset[0.27999999999999997`]}, "Rows" -> {
+                Offset[0.2], {
+                 Offset[0.8]}, 
+                Offset[0.2]}}],
+           "Grid"],
+          FrameMargins->6],
+         Deploy,
+         DefaultBaseStyle->"Deploy"],
+        Alignment->Center,
+        BaseStyle->{
+         FontWeight -> "Light", FontSize -> 11, FontFamily -> 
+          ".AppleSystemUIFont", NumberMarks -> False, Deployed -> False},
+        StripOnInput->False]}
+     },
+     DefaultBaseStyle->"Column",
+     GridBoxAlignment->{"Columns" -> {{Left}}, "Rows" -> {{Baseline}}},
+     GridBoxDividers->{"Columns" -> {{False}}, "Rows" -> {{False}}},
+     GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{1.}}},
+     GridBoxSpacings->{"Columns" -> {
+         Offset[0.27999999999999997`], {
+          Offset[0.5599999999999999]}, 
+         Offset[0.27999999999999997`]}, "Rows" -> {
+         Offset[0.2], 
+         Offset[0.8], {
+          Offset[0.4]}, 
+         Offset[0.2]}}],
+    BaseStyle->"InformationGridFrame",
+    StripOnInput->False], "InformationGridPlain",
+   StripOnInput->False,
+   LineBreakWithin->False],
+  Deploy,
+  DefaultBaseStyle->"Deploy"]], "Output",
+ CellChangeTimes->{
+  3.965133479105516*^9, 3.965133518522107*^9, {3.965133741615087*^9, 
+   3.965133787940172*^9}, 3.9651338461113453`*^9, 3.965133896518928*^9, {
+   3.9651339327179413`*^9, 3.96513428924469*^9}, {3.965134335296667*^9, 
+   3.965134441991004*^9}, {3.9651344727731533`*^9, 3.965134501458276*^9}, 
+   3.965134565879012*^9, {3.965134600284293*^9, 3.965134713737254*^9}, {
+   3.9651347639782753`*^9, 3.9651348310685663`*^9}, {3.965134889783771*^9, 
+   3.965134934977674*^9}},
+ CellLabel->
+  "Out[465]=",ExpressionUUID->"cb62fc9d-4876-4ffa-918b-18dd529b9b60"]
+}, Open  ]]
 }, Open  ]]
 },
-WindowSize->{808, 668},
-WindowMargins->{{Automatic, 127}, {Automatic, 36}},
-FrontEndVersion->"14.2 for Mac OS X ARM (64-bit) (March 16, 2025)",
+WindowSize->{884, 1355},
+WindowMargins->{{822, Automatic}, {Automatic, 0}},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
 StyleDefinitions->"Default.nb",
 ExpressionUUID->"49e36c43-1325-4f00-96c0-b265089fc6d2"
 ]
@@ -185,15 +976,39 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 927, 18, 172, "Input",ExpressionUUID->"eff5fe31-dc78-4237-8923-2865a96bdeb0"],
-Cell[1484, 40, 1886, 48, 243, "Input",ExpressionUUID->"ec4bd3c0-cf80-4d99-9658-c51012446cb6"],
 Cell[CellGroupData[{
-Cell[3395, 92, 166, 3, 52, "Subtitle",ExpressionUUID->"97e073ab-a99f-47f1-9cba-bc82dbeace05"],
-Cell[3564, 97, 2797, 70, 437, "Input",ExpressionUUID->"b92b1fde-40fb-4262-9576-4fa15a91bd4a"]
+Cell[576, 22, 191, 3, 52, "Subtitle",ExpressionUUID->"5387edf3-a778-4748-b1b7-4895ef0355cb"],
+Cell[770, 27, 247, 6, 33, "Text",ExpressionUUID->"5d61e515-8690-4f67-8f3b-3aebd37ff78f"],
+Cell[1020, 35, 2575, 63, 315, "Input",ExpressionUUID->"a6e17e72-cebb-403d-8c5f-1e1c6563bdb0"],
+Cell[3598, 100, 201, 4, 29, "Input",ExpressionUUID->"427d16b7-aaf9-46e9-b2a5-fd9ee03fef2b"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[3836, 109, 216, 4, 52, "Subtitle",ExpressionUUID->"97e073ab-a99f-47f1-9cba-bc82dbeace05"],
+Cell[4055, 115, 2099, 53, 151, "Input",ExpressionUUID->"0ecc41d6-87df-4ad4-b9e2-9eecce583cd4"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[6191, 173, 164, 3, 52, "Subtitle",ExpressionUUID->"ae8342aa-8ec2-405f-9f27-cdbfe9a6cc3b"],
+Cell[6358, 178, 635, 14, 49, "Input",ExpressionUUID->"fc2ef081-60dc-40d4-bbba-9e2d852c187d"],
+Cell[6996, 194, 657, 13, 49, "Input",ExpressionUUID->"6da33dc1-3546-431b-8fea-eed738f2060e"],
+Cell[CellGroupData[{
+Cell[7678, 211, 270, 4, 49, "Input",ExpressionUUID->"f5cf7f3c-52f5-4076-8fc0-06838590be94"],
+Cell[7951, 217, 150, 2, 33, "Output",ExpressionUUID->"611e3ae5-f8a1-4c5c-9991-4fc01dd232c3"],
+Cell[8104, 221, 149, 2, 33, "Output",ExpressionUUID->"b5b0176f-5dc7-4527-9b86-3f095123d8ad"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[8302, 229, 170, 3, 52, "Subtitle",ExpressionUUID->"a5953a3e-9f47-4f14-9f79-736ff2d8bb37"],
+Cell[8475, 234, 6485, 157, 621, "Input",ExpressionUUID->"5ea30681-a1d6-4a26-a1e4-d716a9542ad6"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[14997, 396, 159, 3, 52, "Subtitle",ExpressionUUID->"43d20850-3ffe-4ecb-ae16-babf5790e207"],
+Cell[15159, 401, 231, 4, 29, "Input",ExpressionUUID->"07a7a2aa-4499-4a1b-8608-a20afe34a88a"],
+Cell[CellGroupData[{
+Cell[15415, 409, 1645, 37, 90, "Input",ExpressionUUID->"5a936958-ab94-4edd-adf8-9d46cc4545df"],
+Cell[17063, 448, 22161, 509, 430, "Output",ExpressionUUID->"cb62fc9d-4876-4ffa-918b-18dd529b9b60"]
+}, Open  ]]
 }, Open  ]]
 }
 ]
 *)
-
-(* End of internal cache information *)
 
