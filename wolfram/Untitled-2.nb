@@ -1,0 +1,199 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.2' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      7046,        189]
+NotebookOptionsPosition[      6377,        170]
+NotebookOutlinePosition[      6772,        186]
+CellTagsIndexPosition[      6729,        183]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+  "poiDirectory", 
+   "=", "\"\</Users/jcromwell/Library/CloudStorage/GoogleDrive-jcromwell@\
+entacmedical.com/Shared drives/*Master Drive - ABJ/*Master Folder - \
+Entac/R&D/PrevisAI/files/12h/poi/foreground\>\""}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+  "nopoiDirectory", 
+   "=", "\"\</Users/jcromwell/Library/CloudStorage/GoogleDrive-jcromwell@\
+entacmedical.com/Shared drives/*Master Drive - ABJ/*Master Folder - \
+Entac/R&D/PrevisAI/files/12h/nopoi/foreground\>\""}], ";"}]}], "Input",
+ CellChangeTimes->{{3.965118199647463*^9, 3.965118241498734*^9}, {
+  3.965118377974153*^9, 3.965118401923167*^9}, {3.965118457909453*^9, 
+  3.965118464117341*^9}, {3.965118834662622*^9, 3.965118845509877*^9}, {
+  3.965119039674279*^9, 3.965119042563792*^9}, {3.965119093615827*^9, 
+  3.965119113931829*^9}},
+ CellLabel->"In[8]:=",ExpressionUUID->"eff5fe31-dc78-4237-8923-2865a96bdeb0"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{"Define", " ", "the", " ", "directories"}], " ", "*)"}], 
+  "\[IndentingNewLine]", "\t", "\[IndentingNewLine]", "\t", 
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "Get", " ", "the", " ", "list", " ", "of", " ", "audio", " ", "files"}], 
+   " ", "*)"}], "\[IndentingNewLine]", "\t", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"nopoiFiles", "=", 
+     RowBox[{"FileNames", "[", 
+      RowBox[{"\"\<*.wav\>\"", ",", "nopoiDirectory"}], "]"}]}], ";"}], "\[IndentingNewLine]",
+    "\t", 
+   RowBox[{
+    RowBox[{"poiFiles", "=", 
+     RowBox[{"FileNames", "[", 
+      RowBox[{"\"\<*.wav\>\"", ",", "poiDirectory"}], "]"}]}], ";"}], 
+   "\[IndentingNewLine]", "\t", "\[IndentingNewLine]", "\t", 
+   RowBox[{"(*", " ", 
+    RowBox[{"Import", ",", " ", 
+     RowBox[{"convert", " ", "stereo", " ", "to", " ", "mono"}], ",", " ", 
+     RowBox[{"and", " ", "resample", " ", "to", " ", "16000", " ", "Hz"}]}], 
+    " ", "*)"}], "\[IndentingNewLine]", "\t", 
+   RowBox[{
+    RowBox[{"nopoiAudio", "=", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"AudioResample", "[", 
+        RowBox[{
+         RowBox[{"AudioChannelMix", "[", 
+          RowBox[{
+           RowBox[{"Import", "[", "#", "]"}], ",", "\"\<Mono\>\""}], "]"}], ",",
+          "16000"}], "]"}], " ", "&"}], " ", "/@", " ", "nopoiFiles"}]}], 
+    ";"}], "\[IndentingNewLine]", "\t", 
+   RowBox[{
+    RowBox[{"poiAudio", "=", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"AudioResample", "[", 
+        RowBox[{
+         RowBox[{"AudioChannelMix", "[", 
+          RowBox[{
+           RowBox[{"Import", "[", "#", "]"}], ",", "\"\<Mono\>\""}], "]"}], ",",
+          "16000"}], "]"}], " ", "&"}], " ", "/@", " ", "poiFiles"}]}], 
+    ";"}]}]}]], "Input",
+ CellChangeTimes->{{3.965119414458542*^9, 3.965119430116931*^9}},
+ CellLabel->"In[18]:=",ExpressionUUID->"ec4bd3c0-cf80-4d99-9658-c51012446cb6"],
+
+Cell[CellGroupData[{
+
+Cell["Feature Extraction", "Subtitle",
+ CellChangeTimes->{{3.965119308816679*^9, 
+  3.9651193126143723`*^9}},ExpressionUUID->"97e073ab-a99f-47f1-9cba-\
+bc82dbeace05"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+   "1.", " ", "Define", " ", "the", " ", "function", " ", "to", " ", "get", " ",
+     "the", " ", "feature", " ", "extractor", " ", "network"}], "*)"}], 
+  RowBox[{
+   RowBox[{
+    RowBox[{"getYamnetFeatureExtractor", ":=", 
+     RowBox[{"NetExtract", "[", 
+      RowBox[{
+       RowBox[{
+       "NetModel", "[", "\"\<YAMNet Trained on AudioSet Data\>\"", "]"}], 
+       ",", "\"\<Embedding\>\""}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+   "\n", 
+   RowBox[{"(*", 
+    RowBox[{"2.", " ", "Get", " ", "the", " ", "feature", " ", "extractor"}], 
+    "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"featureNet", "=", "getYamnetFeatureExtractor"}], ";"}], 
+   "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{
+    "3.", " ", "Load", " ", "and", " ", "preprocess", " ", "an", " ", 
+     "example", " ", "audio", " ", "clip"}], "*)"}], "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+    "YAMNet", " ", "expects", " ", "mono", " ", "audio", " ", "at", " ", "a", 
+     " ", "sample", " ", "rate", " ", "of", " ", "16000", " ", "Hz"}], "*)"}],
+    "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"audio", "=", 
+     RowBox[{"ExampleData", "[", 
+      RowBox[{"{", 
+       RowBox[{"\"\<Audio\>\"", ",", "\"\<Bird\>\""}], "}"}], "]"}]}], ";"}], 
+   "\n", 
+   RowBox[{
+    RowBox[{"preprocessedAudio", "=", 
+     RowBox[{"AudioResample", "[", 
+      RowBox[{
+       RowBox[{"AudioChannelCombine", "[", 
+        RowBox[{"audio", ",", "\"\<Mono\>\""}], "]"}], ",", "16000"}], 
+      "]"}]}], ";"}], "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+    "4.", " ", "Apply", " ", "the", " ", "network", " ", "to", " ", "the", " ",
+      "audio", " ", "to", " ", "extract", " ", "the", " ", "feature", " ", 
+     "vector"}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"features", "=", 
+     RowBox[{"featureNet", "[", "preprocessedAudio", "]"}]}], ";"}], 
+   "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+    "5.", " ", "Check", " ", "the", " ", "dimensions", " ", "of", " ", "the", 
+     " ", "output"}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{"Dimensions", "[", "features", "]"}], "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{"Expected", " ", 
+     RowBox[{"Output", ":", 
+      RowBox[{"{", "1024", "}"}]}]}], "*)"}], "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+    "You", " ", "can", " ", "view", " ", "the", " ", "first", " ", "few", " ",
+      "elements", " ", "of", " ", "the", " ", "feature", " ", "vector"}], 
+    "*)"}], "\[IndentingNewLine]", 
+   RowBox[{"Take", "[", 
+    RowBox[{"features", ",", "5"}], "]"}]}]}]], "Input",
+ CellChangeTimes->{{3.965119315172414*^9, 
+  3.965119315175653*^9}},ExpressionUUID->"b92b1fde-40fb-4262-9576-\
+4fa15a91bd4a"]
+}, Open  ]]
+},
+WindowSize->{808, 668},
+WindowMargins->{{Automatic, 127}, {Automatic, 36}},
+FrontEndVersion->"14.2 for Mac OS X ARM (64-bit) (March 16, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"49e36c43-1325-4f00-96c0-b265089fc6d2"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 927, 18, 172, "Input",ExpressionUUID->"eff5fe31-dc78-4237-8923-2865a96bdeb0"],
+Cell[1484, 40, 1886, 48, 243, "Input",ExpressionUUID->"ec4bd3c0-cf80-4d99-9658-c51012446cb6"],
+Cell[CellGroupData[{
+Cell[3395, 92, 166, 3, 52, "Subtitle",ExpressionUUID->"97e073ab-a99f-47f1-9cba-bc82dbeace05"],
+Cell[3564, 97, 2797, 70, 437, "Input",ExpressionUUID->"b92b1fde-40fb-4262-9576-4fa15a91bd4a"]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)
+
